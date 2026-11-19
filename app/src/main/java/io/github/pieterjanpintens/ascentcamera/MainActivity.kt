@@ -17,6 +17,7 @@ import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.View
+import android.graphics.drawable.GradientDrawable
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -28,6 +29,9 @@ import kotlin.concurrent.thread
 /** The setup screen: start/stop the camera service, show the address and pairing code, take a test photo. */
 class MainActivity : Activity() {
     private lateinit var status: TextView
+    private lateinit var statusTitle: TextView
+    private lateinit var statusDot: View
+    private lateinit var batteryCard: View
     private lateinit var address: TextView
     private lateinit var code: TextView
     private lateinit var startStop: Button
@@ -48,6 +52,9 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         status = findViewById(R.id.status)
+        statusTitle = findViewById(R.id.status_title)
+        statusDot = findViewById(R.id.status_dot)
+        batteryCard = findViewById(R.id.battery_card)
         address = findViewById(R.id.address)
         code = findViewById(R.id.code)
         startStop = findViewById(R.id.start_stop)
@@ -79,17 +86,19 @@ class MainActivity : Activity() {
 
     private fun refresh() {
         val running = CameraService.running
+        statusTitle.text = if (running) "Ready" else "Stopped"
+        (statusDot.background.mutate() as GradientDrawable).setColor(getColor(if (running) R.color.ready else R.color.stopped))
         status.text = if (running) {
-            "Camera ready. You can lock the phone now.\n" + CameraService.lastEvent
+            "You can lock the phone now.\n" + CameraService.lastEvent
         } else {
-            "Stopped." + if (CameraService.lastEvent.isNotEmpty()) "\n" + CameraService.lastEvent else ""
+            "Start the camera so Ascent can ask for photos." + if (CameraService.lastEvent.isNotEmpty()) "\n" + CameraService.lastEvent else ""
         }
         address.text = wifiAddress()?.let { "$it:${CameraService.PORT}" } ?: "Not connected to a network"
         code.text = Pairing.code(this)
         startStop.text = if (running) "Stop the camera" else "Start the camera"
         testPhoto.isEnabled = running
         val power = getSystemService(PowerManager::class.java)
-        battery.visibility = if (power.isIgnoringBatteryOptimizations(packageName)) View.GONE else View.VISIBLE
+        batteryCard.visibility = if (power.isIgnoringBatteryOptimizations(packageName)) View.GONE else View.VISIBLE
     }
 
     private fun startCamera() {

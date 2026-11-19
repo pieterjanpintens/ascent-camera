@@ -14,9 +14,9 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/ic_camera"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault"
+        android:theme="@style/AscentTheme"
         android:usesCleartextTraffic="true">
 
         <activity
