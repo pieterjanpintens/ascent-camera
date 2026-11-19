@@ -1,0 +1,16 @@
+# Gradle / Android Studio
+.gradle/
+build/
+/app/build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing keys never go into the repository
+*.jks
+*.keystore
+keystore.properties
